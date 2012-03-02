@@ -11,6 +11,7 @@ AtD.textareas = {};
 
 /* convienence method to restore the text area from the preview div */
 AtD.restoreTextArea = function(id) {
+        id = id.replace('_AtD_div', '', 'gi');
 	var options = AtD.textareas[id];
 
 	/* check if we're in the proofreading mode, if not... then retunr */
@@ -18,24 +19,18 @@ AtD.restoreTextArea = function(id) {
 		return;
 
 	/* clear the error HTML out of the preview div */
-	AtD.remove(id);
+	AtD.remove(id + '_AtD_div');
 
-	/* clear the AtD synchronization field */
-	jQuery('#AtD_sync_').remove();
+        /* remove the AtD div */
+        jQuery('#' + id + '_AtD_div').remove();
   
-	/* swap the preview div for the textarea, notice how I have to restore the appropriate class/id/style attributes */
-
-	var content;
-
-	if (navigator.appName == 'Microsoft Internet Explorer')
-		content = jQuery('#' + id).html().replace(/<BR.*?class.*?atd_remove_me.*?>/gi, "\n");
-	else
-		content = jQuery('#' + id).html();
-
-	jQuery('#' + id).replaceWith( options['node'] );
-	jQuery('#' + id).val( content.replace(/\&lt\;/g, '<').replace(/\&gt\;/, '>').replace(/\&amp;/g, '&') );
-	jQuery('#' + id).height( options['height'] );
-
+	/* swap the preview div for the textarea, just remove the AtD div and show() the original textarea */
+        var container = jQuery('textarea[id=' + id + ']');
+        container.show();
+        /* adding keyup execution, this could assist in firing keyup handlers that 
+           would have normally fire when text changed in the textarea */
+        container.keyup();
+        
 	/* change the link text back to its original label */
 	options['link'].html( options['before'] );
 };
@@ -53,8 +48,9 @@ AtD.checkTextArea = function(id, linkId, after) {
 
 /* where the magic happens, checks the spelling or restores the form */
 AtD._checkTextArea = function(id, commChannel, linkId, after) {
-	var container = jQuery('#' + id);
-
+        id = id.replace('_AtD_div', '', 'gi');
+        var container = jQuery('textarea[id=' + id + ']');
+        
 	/* store options based on the unique ID of the textarea */
 	if (AtD.textareas[id] == undefined) {
 		var properties = {};
@@ -94,18 +90,12 @@ AtD._checkTextArea = function(id, commChannel, linkId, after) {
 		var disableClick = function() { return false; };
 		options['link'] .click(disableClick);
  
-		/* replace the textarea with a preview div, notice how the div has to have the same id/class/style attributes as the textarea */
-       
+		/* add a preview div after the textarea, then hide() the textarea, this will maintain event bindings on the textarea */
 		var div;
 
-		var hidden = jQuery('<input type="hidden" />');
-		hidden.attr('id', 'AtD_sync_');
-		hidden.val(container.val());
-		var name = container.attr('name');
-
 		if (navigator.appName == 'Microsoft Internet Explorer') {
-			container.replaceWith( '<div id="' + id + '">' + container.val().replace(/\&/g, '&amp;').replace(/[\n\r\f]/gm, '<BR class="atd_remove_me">') + '</div>' );
-			div = jQuery('#' + id);
+			container.after('<div id="' + id + '_AtD_div">' + container.val().replace(/\&/g, '&amp;').replace(/[\n\r\f]/gm, '<BR class="atd_remove_me">') + '</div>');
+                        div = jQuery('#' + id + '_AtD_div');
 			div.attr('style', options['node'].attr('style') );
 			div.attr('class', options['node'].attr('class') );
 			div.css( { 'overflow' : 'auto' } );
@@ -113,8 +103,8 @@ AtD._checkTextArea = function(id, commChannel, linkId, after) {
 			options['style']['font-family'] = undefined;
 		} 
 		else {
-			container.replaceWith( '<div id="' + id + '">' + container.val().replace(/\&/g, '&amp;') + '</div>' );
-			div = jQuery('#' + id);
+			container.after('<div id="' + id + '_AtD_div">' + container.val().replace(/\&/g, '&amp;') + '</div>');
+                        div = jQuery('#' + id + '_AtD_div');
 			div.attr('style', options['node'].attr('style') );
 			div.attr('class', options['node'].attr('class') );
 			div.css( { 'overflow' : 'auto', 'white-space' : 'pre-wrap' } );
@@ -123,15 +113,13 @@ AtD._checkTextArea = function(id, commChannel, linkId, after) {
 			div.css({ 'outline' : 'none' }); 
 		}
 
+		/* hide the textarea */
+                container.hide();
 
 		/* block the enter key in proofreading mode */
 		div.keypress(function (event) {
 			return event.keyCode != 13;
 		});
-
-		/* setup the hidden attribute that will keep in sync with the contents of the textarea */
-		hidden.attr('name', name);
-		div.after(hidden);
 
 		var inProgress = false;
 
@@ -153,7 +141,7 @@ AtD._checkTextArea = function(id, commChannel, linkId, after) {
 				temp.html(content); 
 				AtD.core.removeWords(temp);
 
-				hidden.val(temp.html().replace(/\&lt\;/g, '<').replace(/\&gt\;/, '>').replace(/\&amp;/g, '&'));
+				container.val(temp.html().replace(/\&lt\;/g, '<').replace(/\&gt\;/, '>').replace(/\&amp;/g, '&'));
 				inProgress = false;
 			}, 1500);
 		};
@@ -167,7 +155,7 @@ AtD._checkTextArea = function(id, commChannel, linkId, after) {
 		div.height( options['height'] );
 
 		/* check the writing in the textarea */
-		commChannel(id, {
+		commChannel(id + '_AtD_div', {
 			ready: function(errorCount) {
 				/* this function is called when the AtD async service request has finished.
 				   this is a good time to allow the user to click the spell check/edit text link again. */
@@ -186,7 +174,7 @@ AtD._checkTextArea = function(id, commChannel, linkId, after) {
 
 				/* once all errors are resolved, this function is called, it's an opportune time
 				   to restore the textarea */
-				AtD.restoreTextArea( id );
+				AtD.restoreTextArea( id + '_AtD_div' );
 			},
 
 			error: function(reason) {
@@ -198,7 +186,7 @@ AtD._checkTextArea = function(id, commChannel, linkId, after) {
 					alert( AtD.getLang('message_server_error_short', "There was an error communicating with the spell checking service.") + "\n\n" + reason );
 
 				/* restore the text area since there won't be any highlighted spelling errors */
-				AtD.restoreTextArea( id );
+				AtD.restoreTextArea( id + '_AtD_div' );
 			},
 
 			editSelection : function(element) {
@@ -233,7 +221,7 @@ jQuery.fn.addProofreader = function(options) {
 		node.attr('id', 'AtD_' + parent.id++);
 		node.html(opts.proofread_content);
 		node.click(function(event) { 
-			if (AtD.current_id != undefined && AtD.current_id != id) {
+                        if (AtD.current_id != undefined && AtD.current_id != id) {
 				AtD.restoreTextArea(AtD.current_id);
 			}
 
