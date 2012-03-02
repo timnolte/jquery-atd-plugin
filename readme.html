@@ -1,0 +1,176 @@
+<html>
+ <head>
+   <title>After the Deadline for jQuery - README</title>
+ </head>
+ <body> 
+   <h1>After the Deadline API for jQuery (1.3, 1.4.1) - README</h1>
+ 
+   <p><a href="http://www.afterthedeadline.com">After the Deadline</a> is an <a href="http://open.afterthedeadline.com/">open source</a> software service that <a href="http://www.afterthedeadline.com/features.slp">checks spelling, style, and grammar</a>.
+   This package contains an AtD API and examples for using After the Deadline in your web application.</p>
+
+   <h3>AtD API</h3>
+ 
+   <ul>
+   <p><em>The AtD API is available by including <strong>scripts/jquery.atd.js</strong> in your webpage.  There are two methods for talking to the AtD service: cross-domain AJAX and normal calls.
+   The following functions work with either:</em></p>
+
+   <p><strong>AtD.addI18n({strings})</strong> is a means to install a new set of strings into this extension for localization.</p>
+
+   <p><strong>AtD.getLang('key', 'default value')</strong> looks up the key in the plugin strings table. If the key is no present the default value is
+   returned. Use this method to query the strings table for localized strings.</p>
+
+   <p><strong>AtD.ignore_types</strong> is an array of strings specifying which types of errors to ignore.  By default all errors are ignored except misspelled words, misused words, and grammar 
+   errors.  All the style checking options are disabled.  The following types are available: Bias Language, Cliches, Complex Expression, Diacritical Marks, Double Negatives, Hidden Verbs, Jargon 
+   Language, Passive voice, Phrases to Avoid, and Redundant Expression.</p>
+
+   <p><strong>AtD.remove('id')</strong> is a function to remove all the AtD markup from the DIV with the specific id.</p>
+
+   <p><strong>AtD.setIgnoreStrings('a,b,c')</strong> is a function to set which strings AtD should ignore. Separate phrases with a comma.</p>
+
+   <p><strong>AtD.showTypes('Complex Expression')</strong> is a function to update <code>AtD.ignore_types</code> by removing the specified types. Separate multiple types with a comma.</p>
+
+   <h3>Normal AJAX API</h3>
+
+   <p><em>The <code>AtD.check()</code> function expects to call a proxy script located on the same server as the page you've embedded AtD into.</em></p>
+
+   <p><strong>AtD.api_key</strong> is a string containing a unique key identifying this AtD user. You get to make this value up. Ideally, use a string to identify your application followed by a string that is unique to this user or installation of AtD. There is a performance benefit to using the same key for subsequent requests.</p>
+
+   <p><strong>AtD.check('id', callbacks)</strong> checks the spelling, style, and grammar in the specified DIV id using the server-side proxy communication method.  The callbacks object is a 
+   hash containing <em>success</em> and <em>error</em> functions that are called when appropriate.  The API for these functions is the same as <code>checkCrossAJAX()</code>. The callbacks
+   object may also contain <em>editSelection</em>, <em>explain</em>, <em>ignore</em>, and <em>ready</em> functions. There is no set limit on the length of the text using this method.</p>
+
+   <p>The callback functions used with <code>AtD.check()</code> include:</p>
+   <ul>
+   <p>The <em>editSelection</em> function, which is called with a JavaScript object containing an HTML element with the error. When set, AtD will show an <em>Edit Selection ...</em> menu item.
+   The user should be prompted for an alternate suggestion after clicking this menu item. This exists to get around the inconvenience of not being able to edit
+   text while correcting it. <a href="demo2.html">demo2.html</a> uses this feature.</p>
+
+   <p>The <em>explain</em> function, which is called with a string containing a URL. When set, AtD will show an <em>Explain ...</em> menu item for errors that have an explanation.</p>
+
+   <p>The <em>error</em> function, which is called with a string containing an error message. This function is called when an error occurred that prevented the checking of the document.</p>
+
+   <p>The <em>ignore</em> function, which is called with a string containing a word or phrase to ignore. When set, AtD will show an <em>Ignore Always</em> menu item to permanently ignore an 
+   error. It's up to you to store the phrase or word when the <em>ignore</em> function is called.</p>
+
+   <p>The <em>ready</em> function, which is called with an integer containing the number of errors found. This function is called when the request to the AtD service is complete.</p>
+
+   <p>The <em>success</em> function, which is called with an integer containing the number of errors found. This function is called after the document has been checked and all errors have 
+   been ignored or corrected.</p>
+   </ul>
+
+   <p><strong>AtD.rpc</strong> is a string containing the URL for the AtD proxy script.  This value is used by the <code>check()</code> function. Point this to <em>server/proxy.php</em> 
+   included in this package. If you use <em>proxy.php</em> you should set <code>AtD.rpc</code> to <code>'proxy.php?url='</code>. Use of the server-side proxy will decrease the wait time 
+   for responses and there is no character limit.</p>
+
+   <h3>Cross-Domain AJAX API</h3>
+
+   <p><em>The cross-domain AJAX API lets you communicate with an AtD server on a separate domain. If you use this method with our CSS proxy server you don't need an API key. BUT you're at 
+   a disadvantage if you do this. Our CSS proxy is on a single server and the AtD app server only allows one concurrent request/key. Your best option is to set <code>AtD.rpc_css</code>
+   and set your (made up) key in <strong>server/proxycss.php</strong>.</em></p> 
+   
+   <p><strong>AtD.checkCrossAJAX('id', callbacks)</strong> checks the spelling, style, and grammar in the specified DIV id using the remote CSS includes method.  In my opinion this is a total
+   hack (but it does work!).  The callbacks object is a hash as described above.  See <a href="demo.html">demo</a> and <a href="demo2.html">demo2</a> for practical examples of how this works.
+   Internet Explorer users are limited to 2,000 characters using this method and other browsers are limited to ~7,500 characters.</p>
+
+   <p><strong>AtD.rpc_css</strong> is a string containing the URL for an AtD proxy script that encodes AtD requests as a CSS file compatible with the CSSHttpRequest call developed by 
+   <a href="http://nb.io">nb.io</a>.  This value is already set to a proxy you can use for personal projects and testing.  If you choose to run an AtD server, you can set this value to 
+   something else.  The <em>server/proxycss.php</em> file shows how to communicate with AtD with remote CSS includes.</p>
+
+   <p><strong>AtD.rpc_css_lang</strong> is the desired proofreading language (one of: de, en, es, fr, or pt). We use a separate server for each language (e.g., [lang].service.afterthedeadline.com). Specifying this value tells proxycss.php which server to send the request to. The normal AtD API does not have this value as I assume you control the proxy mechanism and can specify which server your AtD requests go to.</p>
+
+   <h3>AtD TextArea API</h3>
+
+   <p><em>The TextArea API is available by loading <b>scripts/jquery.atd.textarea.js</b>. This API allows you to check a textarea when a link is clicked.</em></p>
+
+   <p><strong>AtD.checkTextArea('id', 'linkId', 'link HTML after clicking')</strong> checks the spelling, style, and grammar in the specified TEXTAREA id by posting to the 
+   server-side proxy. The <em>linkId</em> is the id of the link that activates this method. When clicked the HTML will be changed to <em>link HTML after clicking</em>. This
+   will signal to the user that the textarea is in proofreading mode. Clicking the link again will restore the original textarea and link HTML.</p>
+
+   <p><strong>AtD.checkTextAreaCrossAJAX('id', 'linkId', 'link HTML after clicking')</strong> checks the spelling, style, and grammar in the specified TEXTAREA id using the remote
+   CSS includes communication method. The options are the same as described above.</p>
+
+   <p><strong>AtD._checkTextArea('id', function(), 'linkId', 'link HTML after clicking')</strong> checks the spelling, style, and grammar in the specified TEXTAREA id by calling
+   the function() passed in the second parameter. This function will receive the AtD DIV <em>id</em> and a JavaScript object <em>callbacks</em> as described in the <em>AtD.check()</em>
+   API. You can call this version of <em>_checkTextArea</em> to intercept the callbacks and modify them or add new behaviors. Do this if you need full control.</p>
+
+   <p><strong>AtD.restoreTextArea('id')</strong> will strip the After the Deadline errors and restore the TEXTAREA. You can safely call this function if no spell check is in
+   progress. It will do nothing at that point. I recommend calling this function before submitting a form with an AtD textarea attached.</p> 
+
+   </ul>
+
+   <h3>Quick Start</h3>
+
+   <p>The API above gives you full control over what AtD does. If you'd like to get going quicker and you have a basic form, then the jQuery style API is what you want. To attach AtD to a textarea:
+
+   <pre>$(textarea).addProofreader({ edit_text_content: 'Edit Text', proofread_content: 'Proofread' );</pre>
+
+   <p>This call will also hook the parent form's submit event to restore the textarea for you.</p>
+
+   <p>You can customize the HTML used for the proofread and edit text links. If you want to communicate using a proxy, set AtD.rpc and AtD.api_key to the appropriate values and the proofreader will use that communication method instead.</p>
+
+   <h3>Customizing</h3>
+
+   <p>You may customize the suggestions menu and the error styles in <em>css/atd.css</em>.</p>
+
+   <h3>Examples</h3>
+
+   <p>The best way to learn to use the AtD API is to look at the examples and adapt them to your needs.  The two examples included are:</p>
+
+   <ul>
+     <li><a href="demo.html">Check writing on a DIV</a></li>
+     <li><a href="demo2.html">Check writing in a TextArea</a></li>
+     <li><a href="demo3.html">Check writing in a TextArea (Quick Start)</a></li>
+     <li><a href="demo3.fr.html">Check writing in a TextArea (Quick Start) [French]</a></li>
+   </ul>
+
+   <h3>Localization</h3>
+
+   <p>To localize the strings in this extension, create an object with the localized strings. Here is an example:</p>
+
+<pre>var my_plugin_strings = {
+   menu_title_spelling: "Spelling",
+   menu_title_repeated_word: "Repeated  Word",
+   menu_title_no_suggestions: "No suggestions",
+   menu_option_explain: "Explain...",
+   menu_option_ignore_once: "Ignore suggestion",
+   menu_option_ignore_all: "Ignore all",
+   menu_option_ignore_always: "Ignore always",
+   menu_option_edit_selection: "Edit Selection...",
+   message_no_errors_found: "No writing errors were found.",
+   message_server_error_short: "There was a problem communicating with the After the Deadline service.",
+   dialog_replace_selection: "Replace selection with:"
+};</pre>
+
+   <p>Then make AtD use these strings:</p>
+
+   <pre>AtD.addI18n(my_plugin_strings);</pre>
+
+   <p>These string labels are compatible with the <a href="http://www.afterthedeadline.com/download.slp?platform=TinyMCE">AtD/TinyMCE extension</a>.</p>
+
+   <h3>Commercial Access to AtD Service</h3>
+
+   <p>We have an AtD service instance open to the outside world.  This API is configured to use it by default.  We will continue to operate it so long as the load on it is not too great.
+   The <a href="http://open.afterthedeadline.com">After the Deadline Server</a> is open source under the GPLv2 license. Consider running your own server if you have a commercial need.</p>
+
+   <h3>AtD and Encoding</h3>
+
+   <p>As a final note, make sure your webpage is encoded in UTF-8 format. AJAX requests use the encoding of the parent website and AtD expects UTF-8. This is important as AtD has better support for accented characters and languages beyond English.</p>
+
+   <h3>What's New?</h3>
+
+   <p>See the <a href="changelog.html">Change Log</a>.</p>
+
+   <h3>License</h3>
+
+   <p>Unless otherwise noted, the resources here are dual licensed under <a href="http://www.opensource.org/licenses/lgpl-2.1.php">LGPL</a> and <a href="http://www.opensource.org/licenses/mit-license.php">MIT</a> license.  
+
+   <p>The files <em>scripts/csshttprequest.js</em> and <em>server/cssencode.php</em> are &copy; 2008-2009 <a href="http://nb.io/">nb.io</a> and are licensed under the BSD license.</p>
+
+   <h3>Contact</h3>
+
+   <p><a href="http://www.afterthedeadline.com/contact.slp">Raphael Mudge</a></p>
+
+   <p>Join the <a href="http://groups.google.com/group/atd-developers">atd-developers</a> list for support.</p>
+
+ </body>
+</html>

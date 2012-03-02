@@ -1,0 +1,92 @@
+<html>
+ <head>
+   <title>After the Deadline for jQuery - Changelog</title>
+ </head>
+ <body>
+  <h1>What's New in AtD/jQuery</h1>
+
+  <h3>3 May 10</h3>
+
+  <ul>
+      <li>fixed content-type of proxycss.php to allow cross-domain AJAX to work in other browsers</li>
+  </ul>
+
+  <h3>24 Mar 10</h3>
+
+  <ul>
+      <li>Updated to latest AtD/Core module:
+      <ul>
+        <li>Added L10n string <em>menu_title_confused_word</em> to localize "Did you mean..."</li>
+        <li>Fixed two cases of parent variable polution (two for loops not declaring their vars)</li>
+        <li>Fixed bug preventing subsequent occurences of one error (w/ the same context) from highlighting</li>
+        <li>Error highlighter now uses beginning of word boundary to accurately find error location in text</li>
+        <li>Fixed bug preventing misspelled words in single quotes from being highlighted</li>
+      </ul>
+      </li>
+      <li>Updated addProofreader to ignore spellcheck attribute. Use <code>$(textarea[spellcheck!=false]).addProofreader();</code> to get the old behavior</li>
+      <li>Updated proxycss.php to support a lang=[de,en,es,fr,pt] parameter to specify language</li>
+      <li>Fixed proxycss reporting wrong content-length to AtD server (and thereby causing a hand) for strings with multi-byte chars</li>
+  </ul>
+
+  <h3>15 Feb 10</h3>
+
+  <ul>
+   <li>Fixed compatability issues with jQuery 1.4.1. This extension still works with 1.3</li>
+   <ul><li>Thanks <a href="http://gaut.am">Gautam</a> for reporting this issue and contributing a patch for ignore suggestion</li></ul>
+   <li>Fixed a highlighting issue</li>
+   <li>Fixed an I18n issue with AtD Core strings</li>
+   <li>Bug fix to AtD Core, was ignoring all show types settings</li>
+  </ul>
+  
+  <h3>14 Jan 10</h3>
+  
+  <ul>
+   <li>Made the AtD.setIgnoreTypes and AtD.showTypes calls tolerate whitespaces after commas</li>
+   <li>Added localization support to the extension.</li>
+   <li>Fixed a bug with spaces getting eaten in IE (occasionally)</li>
+   <li>Fixed a bug where (omit) suggestions didn't remove the highlighted phrase</li>
+   <li>Added a make.sh to combine multiple scripts into one and to run jsmin if it's in the path</li>
+   <lI>Added jQuery('selector').addProofreader() function to transparently handle the details of adding AtD to a textarea.</li>
+   <li>AtD.checkTextArea now does a better job mimicing the replaced text editor</li>
+   <li>Fixed a bug applying suggestions with a ' quote in them.</li>
+   <li>Textarea extension now sets contentEditable="true" in proofreading DIV on non-IE browsers. This means some users can edit their text while the errors are displayed.</li>
+   <li>Textarea extension now keeps a hidden input buffer (with the form name of the original textarea) in sync with the contents of the proofreading div</li>
+   <li>Added a workaround to a bug with CSS communication method escaping the ' character (it's in the CSS proxy file, it replaces \' with ')</li>
+   <lI>Added a hack to prevent encoding of <, > -> &lt;, &gt; when switching from proofreading mode.</li>
+  </ul>
+
+  <h3>11 Dec 09</h3>
+
+  <ul>
+   <lI>Fixed an error highlighting issue</li>
+   <li>Plugin now checks if a global constant, AtD_proofread_click_count exists. If it does--it increments it with each use.</li>
+  </ul>
+
+  <h3>12 Nov 09</h3>
+
+  <ul>
+   <li>Updated editSelection ability to keep phrase highlighted if no change was made</li>
+   <lI>Fixed a character escaping issue with AtD.check()</li>
+   <li>Plugin is now smarter about reporting an accurate error count (important for showing no errors found message at the right times)</li>
+   <li>Added "Diacritical Marks" error type to default ignore list. This is a new AtD style checking option to help restore missing accents to English words 
+   borrowed from other languages.</li>
+   <li>Added a <em>scripts/jquery.atd.textarea.js</em> with an API to hook AtD into a TextArea--saves you the work.</li>
+  </ul>
+
+  <h2>3 Nov 09</h2>
+
+  <p>The purpose of this release is to fix bugs and make this plugin support the full set of features in After the Deadline.</p>
+
+  <ul>
+   <li>Added <em>editSelection</em>, <em>explain</em>, <em>ignore</em>, and <em>ready</em> callbacks to <code>AtD.check()</code> and <code>AtD.checkCrossAJAX</code>.</li>
+   <li>Added <code>AtD.setIgnoreStrings</code> and <code>AtD.showTypes</code></li>
+   <li>Text sent to AtD proxy is now escaped properly.</li> 
+   <li>Added proxy.php from the TinyMCE plugin to the AtD/jQuery distribution. Point <code>AtD.rpc</code> to <em>proxy.php?url=</em> if you want to use the <code>check()<code> function</li>
+   <li>Fixed a bug that allowed two errors in the same span to step on eachother.</li>
+  </ul>
+
+  <h2>27 Oct 09</h2>
+
+  <p>initial release</p>
+ </body>
+</html>
