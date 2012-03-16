@@ -12,20 +12,32 @@ AtD.textareas = {};
 /* convienence method to restore the text area from the preview div */
 AtD.restoreTextArea = function(id) {
         id = id.replace('_AtD_div', '', 'gi');
+        var div = jQuery('#' + id + '_AtD_div');
 	var options = AtD.textareas[id];
+        var container = jQuery('textarea[id=' + id + ']');
 
 	/* check if we're in the proofreading mode, if not... then retunr */
 	if (options == undefined || options['before'] == options['link'].html())
 		return;
 
-	/* clear the error HTML out of the preview div */
-	AtD.remove(id + '_AtD_div');
+        /* do final sync of content to be sure we've captured the changes back to the textarea */
+        var content;
+        if (jQuery.browser.msie === true)
+                content = div.html().replace(/<BR.*?class.*?atd_remove_me.*?>/gi, "\n");
+        else
+                content = div.html();
+
+        /* strip the AtD markup */
+        var temp = jQuery('<div></div>');
+        temp.html(content); 
+        AtD.core.removeWords(temp);
+
+        container.val(temp.html().replace(/\&lt\;/g, '<').replace(/\&gt\;/, '>').replace(/\&amp;/g, '&'));
 
         /* remove the AtD div */
         jQuery('#' + id + '_AtD_div').remove();
   
 	/* swap the preview div for the textarea, just remove the AtD div and show() the original textarea */
-        var container = jQuery('textarea[id=' + id + ']');
         container.show();
         /* adding keyup execution, this could assist in firing keyup handlers that 
            would have normally fire when text changed in the textarea */
