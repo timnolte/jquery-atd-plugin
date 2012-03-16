@@ -374,7 +374,11 @@ AtD.initCoreModule = function() {
 	};
 
 	core.getAttrib = function(node, name) {
-		return jQuery(node).attr(name);
+            if ($j.browser.msie === true) {
+                return node.getAttribute(name);
+            } else {
+                return jQuery(node).attr(name);
+            }
 	};
 
 	return core;
